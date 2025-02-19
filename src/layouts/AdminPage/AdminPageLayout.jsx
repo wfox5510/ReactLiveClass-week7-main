@@ -3,13 +3,13 @@ import "./AdminPageLayout";
 import { useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import { Toast } from "bootstrap";
-import { useSelector,useDispatch } from "react-redux";
-import { setMessage } from "../../slice/toastSlice";
+import { useSelector, useDispatch } from "react-redux";
 import NavBar from "../../components/Navbar";
 
 function AdminPageLayout() {
+  const message = useSelector((state) => state.toast.message);
 
-  const toastRef = useRef({})
+  const toastRef = useRef({});
   const navItemList = [
     {
       name: "首頁",
@@ -25,37 +25,35 @@ function AdminPageLayout() {
     },
   ];
   useEffect(() => {
-    var toastElList = [].slice.call(document.querySelectorAll(".toast"));
-    var toastList = new Toast(toastRef.current[0]);
-    toastList.show();
-    setInterval(() => {
-      toastList.hide();
-    }, 500);
-    console.log(toastElList);
-    console.log(toastRef.current);
-  }, []);
+    console.log(message)
+
+  }, [message]);
+
   return (
     <>
-      <div className="position-fixed top-0 end-0 p-3" style={{ zIndex: "5" }}>
-        <div
-          ref={(el) => {
-            toastRef.current[0] = el;
-          }}
-          id="liveToast"
-          className="toast hide"
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-        >
-          <div className="toast-header bg-success">
-            <strong className="me-auto">Bootstrap</strong>
-            <small>11 mins ago</small>
+      {message.map((messageItem) => {
+        <div className="position-fixed top-0 end-0 p-3" style={{ zIndex: "5" }}>
+          <div
+            ref={(el) => {
+              toastRef.current[messageItem.id] = el;
+            }}
+            id="liveToast"
+            className="toast hide"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+          >
+            <div className="toast-header bg-success">
+              <strong className="me-auto">Bootstrap</strong>
+              <small>11 mins ago</small>
+            </div>
+            <div className="toast-body">
+              {messageItem.message}
+            </div>
           </div>
-          <div className="toast-body">
-            Hello, world! This is a toast message.
-          </div>
-        </div>
-      </div>
+        </div>;
+      })}
+
       <NavBar navItemList={navItemList} />
       <Outlet />
     </>

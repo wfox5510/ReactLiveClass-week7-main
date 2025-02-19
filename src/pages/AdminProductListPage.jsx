@@ -13,7 +13,7 @@ const AdminProductList = () => {
   const productModalRef = useRef();
   //取得產品資料
   const [productData, setProductData] = useState(null);
-
+ 
   useEffect(() => {
     (async () => {
       try {
@@ -139,7 +139,7 @@ const AdminProductList = () => {
     });
   };
   //上傳/修改產品資料
-
+  
   const handleModalBtn = () => {
     isNewProduct ? postProjectData() : putProjectData();
   };
@@ -153,9 +153,8 @@ const AdminProductList = () => {
       handleCloseProductModal();
     } catch (error) {
       dispatch(
-        setMessage({ message: error.response.data.message, state: "error" })
+        setMessage({ message: error.response.data.message, status: "error" })
       );
-      useSelector((state)=>{console.log(state)})
       alert(error.response.data.message);
     }
   };

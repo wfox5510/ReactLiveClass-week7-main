@@ -7,12 +7,12 @@ const toastSlice = createSlice({
   },
   reducers: {
     setMessage(state, action) {
+      const {message ,status } = action.payload;
       state.message.push({
         id: new Date().getTime(),
-        toastMessage: action.payload.message.join(","),
-        state: action.payload.state,
+        toastMessage: message.join(","),
+        status: status,
       });
-      console.log(state.message);
     },
   },
 });

@@ -26,3 +26,7 @@ img {
   display: inline;
   content: "⚠ ";
 }
+
+.bg-error{
+  background-color: #db3838 !important; 
+}

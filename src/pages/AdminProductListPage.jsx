@@ -146,21 +146,25 @@ const AdminProductList = () => {
 
   const postProjectData = async () => {
     try {
-      await axios.post(`${API_BASE}/api/${API_PATH}/admin/product`, {
+      const res = await axios.post(`${API_BASE}/api/${API_PATH}/admin/product`, {
         data: tempProductData,
       });
       getProducts();
       handleCloseProductModal();
+      console.log(res)
+      dispatch(
+        setMessage({ message: res.data.message, status: "success" })
+      );
     } catch (error) {
       dispatch(
-        setMessage({ message: error.response.data.message, status: "error" })
+        setMessage({ message: error.response.data.message.join(","), status: "error" })
       );
     }
   };
 
   const putProjectData = async () => {
     try {
-      await axios.put(
+      const res = await axios.put(
         `${API_BASE}/api/${API_PATH}/admin/product/${tempProductData.id}`,
         {
           data: tempProductData,
@@ -168,8 +172,13 @@ const AdminProductList = () => {
       );
       getProducts();
       handleCloseProductModal();
+      dispatch(
+        setMessage({ message: res.data.message, status: "success" })
+      );
     } catch (error) {
-      alert(error.response.data.message);
+      dispatch(
+        setMessage({ message: error.response.data.message, status: "error" })
+      );
     }
   };
 
@@ -180,10 +189,16 @@ const AdminProductList = () => {
 
   const delProductData = async (id) => {
     try {
-      await axios.delete(`${API_BASE}/api/${API_PATH}/admin/product/${id}`);
+      const res = await axios.delete(`${API_BASE}/api/${API_PATH}/admin/product/${id}`);
       getProducts();
+      console.log(res.data.message); 
+      dispatch(
+        setMessage({ message: res.data.message, status: "success" })
+      );
     } catch (error) {
-      alert(error.response.data.message);
+      dispatch(
+        setMessage({ message: error.response.data.message, status: "error" })
+      );
     }
   };
 

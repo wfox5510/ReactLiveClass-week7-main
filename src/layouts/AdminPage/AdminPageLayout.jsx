@@ -1,14 +1,15 @@
-import "./AdminPageLayout";
+import "./AdminPageLayout.css";
 
 import { useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import { Toast } from "bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import NavBar from "../../components/Navbar";
+import { delMessage } from "../../slice/toastSlice";
 
 function AdminPageLayout() {
   const message = useSelector((state) => state.toast.message);
-
+  const dispatch = useDispatch();
   const toastRef = useRef({});
   const navItemList = [
     {
@@ -25,15 +26,14 @@ function AdminPageLayout() {
     },
   ];
   useEffect(() => {
-    var toastElList = [].slice.call(document.querySelectorAll(".toast"));
-    var toastList = toastElList.map(function (toastEl) {
-      return new Toast(toastEl);
+    message.forEach((messageItem) => {
+      const toastBS = new Toast(toastRef.current[messageItem.id]);
+      toastBS.show();      
+      setTimeout(() => {
+        toastBS.hide();
+        dispatch(delMessage(messageItem.id));
+      }, 2000);
     });
-    const toastList2 = message.map((messageItem) => {
-      return new Toast(toastRef.current[messageItem.id]);
-    });
-
-    toastList.length !== 0 && toastList[0].show();
   }, [message]);
 
   return (
@@ -51,11 +51,12 @@ function AdminPageLayout() {
                 aria-live="assertive"
                 aria-atomic="true"
               >
-                <div className="toast-header bg-success">
-                  <strong className="me-auto">Bootstrap</strong>
-                  <small>11 mins ago</small>
+                <div className={`toast-header bg-${messageItem.status}`}>
+                  <strong className="me-auto text-light fw-bold">
+                    {messageItem.status === "error" ? "錯誤" : "成功"}
+                  </strong>
                 </div>
-                <div className="toast-body">{messageItem.message}</div>
+                <div className="toast-body">{messageItem.toastMessage}</div>
               </div>
             );
           })}

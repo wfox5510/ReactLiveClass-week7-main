@@ -155,7 +155,6 @@ const AdminProductList = () => {
       dispatch(
         setMessage({ message: error.response.data.message, status: "error" })
       );
-      alert(error.response.data.message);
     }
   };
 

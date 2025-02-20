@@ -25,35 +25,42 @@ function AdminPageLayout() {
     },
   ];
   useEffect(() => {
-    console.log(message)
+    var toastElList = [].slice.call(document.querySelectorAll(".toast"));
+    var toastList = toastElList.map(function (toastEl) {
+      return new Toast(toastEl);
+    });
+    const toastList2 = message.map((messageItem) => {
+      return new Toast(toastRef.current[messageItem.id]);
+    });
 
+    toastList.length !== 0 && toastList[0].show();
   }, [message]);
 
   return (
     <>
-      {message.map((messageItem) => {
-        <div className="position-fixed top-0 end-0 p-3" style={{ zIndex: "5" }}>
-          <div
-            ref={(el) => {
-              toastRef.current[messageItem.id] = el;
-            }}
-            id="liveToast"
-            className="toast hide"
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-          >
-            <div className="toast-header bg-success">
-              <strong className="me-auto">Bootstrap</strong>
-              <small>11 mins ago</small>
-            </div>
-            <div className="toast-body">
-              {messageItem.message}
-            </div>
-          </div>
-        </div>;
-      })}
-
+      <div aria-live="polite" aria-atomic="true" class="position-relative">
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+          {message.map((messageItem) => {
+            return (
+              <div
+                ref={(el) => {
+                  toastRef.current[messageItem.id] = el;
+                }}
+                className="toast hide"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
+              >
+                <div className="toast-header bg-success">
+                  <strong className="me-auto">Bootstrap</strong>
+                  <small>11 mins ago</small>
+                </div>
+                <div className="toast-body">{messageItem.message}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
       <NavBar navItemList={navItemList} />
       <Outlet />
     </>

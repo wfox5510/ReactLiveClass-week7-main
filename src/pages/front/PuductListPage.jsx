@@ -1,33 +1,37 @@
 import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
-import { Modal } from "bootstrap";
-
-import ReactLoading from "react-loading";
 import axios from "axios";
-
+import { useSelector,useDispatch } from "react-redux";
+import LoadingFull from "../../components/LoadingFull";
+import { setIsLoading } from "../../slice/loadingFullSlice";
 const API_BASE = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
 const ProductListPage = () => {
   const [productData, setProductData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [paginationData, setPaginationData] = useState(null);
+  
   const [isComponentLoading, setIsComponentLoading] = useState(false);
-  const productModalRef = useRef(null);
-
+  const isLoading = useSelector(state => state.loadingFull.isLoading);
+  const dispatch = useDispatch()
   useEffect(() => {
     getProduct();
   }, []);
 
-  const getProduct = async () => {
+  const getProduct = async (page = 1) => {
     try {
-      setIsLoading(true);
-      const res = await axios.get(`${API_BASE}/api/${API_PATH}/products/all`);
+      dispatch(setIsLoading(true))
+      const res = await axios.get(
+        `${API_BASE}/api/${API_PATH}/products?page=${page}`
+      );
+      console.log(res.data.pagination);
+      setPaginationData(res.data.pagination);
       setProductData(res.data.products);
-      setIsLoading(false);
+      dispatch(setIsLoading(false))
     } catch (error) {
       alert(error.response.data.message);
     } finally {
-      setIsLoading(false);
+      dispatch(setIsLoading(false))
     }
   };
 
@@ -49,24 +53,7 @@ const ProductListPage = () => {
   };
   return (
     <div className="container">
-      {isLoading && (
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{
-            position: "fixed",
-            inset: 0,
-            backgroundColor: "rgba(255,255,255,0.3)",
-            zIndex: 1000,
-          }}
-        >
-          <ReactLoading
-            type="spinningBubbles"
-            color="black"
-            height={"100px"}
-            width={"100px"}
-          />
-        </div>
-      )}
+      {isLoading && <LoadingFull />}
       <table className="table align-middle">
         <thead>
           <tr>
@@ -130,6 +117,57 @@ const ProductListPage = () => {
           })}
         </tbody>
       </table>
+      <nav
+        className="d-flex justify-content-center"
+        aria-label="Page navigation"
+      >
+        <ul className="pagination">
+          <li className="page-item">
+            <a
+              className={`page-link ${!paginationData?.has_pre && "disabled"}`}
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                getProduct(paginationData.current_page - 1);
+              }}
+            >
+              上一頁
+            </a>
+          </li>
+          {Array.from({ length: paginationData?.total_pages }).map(
+            (item, index) => {
+              return (
+                <li className="page-item" key={index}>
+                  <a
+                    className={`page-link ${
+                      paginationData?.current_page === index + 1 && "active"
+                    }`}
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      getProduct(index + 1);
+                    }}
+                  >
+                    {index + 1}
+                  </a>
+                </li>
+              );
+            }
+          )}
+          <li className="page-item">
+            <a
+              className={`page-link ${!paginationData?.has_next && "disabled"}`}
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                getProduct(paginationData.current_page + 1);
+              }}
+            >
+              下一頁
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 };

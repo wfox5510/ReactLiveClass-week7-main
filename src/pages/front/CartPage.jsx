@@ -216,7 +216,7 @@ const CartPage = () => {
               <input
                 id="tel"
                 name="電話"
-                type="text"
+                type="tel"
                 className="form-control"
                 placeholder="請輸入電話"
                 {...register("tel", {

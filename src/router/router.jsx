@@ -1,16 +1,17 @@
-import ProductPageLayout from "../layouts/ProductPage/ProductPageLayout";
-import CartPage from "../pages/CartPage";
-import HomePage from "../pages/HomePage";
-import ProductListPage from "../pages/PuductListPage";
-import ProductPage from "../pages/ProductPage";
-import LoginPage from "../pages/LoginPage";
-import AdminProductList from "../pages/AdminProductListPage";
+import FrontPageLayout from "../layouts/FrontPageLayout/FrontPageLayout";
+import CartPage from "../pages/front/CartPage";
+import HomePage from "../pages/front/HomePage";
+import ProductListPage from "../pages/front/PuductListPage";
+import ProductPage from "../pages/front/ProductPage";
+import LoginPage from "../pages/front/LoginPage";
+import AdminProductList from "../pages/admin/AdminProductListPage";
 import AdminPageLayout from "../layouts/AdminPage/AdminPageLayout";
-import AdminOrderPage from "../pages/AdminOrderPage";
+import AdminOrderPage from "../pages/admin/AdminOrderPage";
+import PageNotFound from "../pages/PageNotFound";
 const router = [
   {
     path: "/",
-    element: <ProductPageLayout />,
+    element: <FrontPageLayout />,
     children: [
       {
         path: "",
@@ -28,16 +29,16 @@ const router = [
         path: "product/:id",
         element: <ProductPage />,
       },
+      {
+        path: "login",
+        element: <LoginPage />,
+      },
     ],
   },
   {
     path: "/admin",
     element: <AdminPageLayout />,
     children: [
-      {
-        path: "login",
-        element: <LoginPage />,
-      },
       {
         path: "productList",
         element: <AdminProductList/>,
@@ -48,6 +49,10 @@ const router = [
       }
     ],
   },
+  {
+    path:"/*",
+    element: <PageNotFound />
+  }
 ];
 
 export default router;

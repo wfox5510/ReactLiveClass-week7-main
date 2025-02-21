@@ -1,39 +1,34 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Modal } from "bootstrap";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { setMessage } from "../slice/toastSlice";
+import { useDispatch } from "react-redux";
+import { setMessage } from "../../slice/toastSlice";
+import { setIsLoading } from "../../slice/loadingFullSlice";
 const API_BASE = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
 const AdminProductList = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const productModalRef = useRef();
   //取得產品資料
   const [productData, setProductData] = useState(null);
- 
+  const [paginationData, setPaginationData] = useState(null);
   useEffect(() => {
-    (async () => {
-      try {
-        const token = document.cookie.replace(
-          /(?:(?:^|.*;\s*)hexTokenWeek2\s*\=\s*([^;]*).*$)|^.*$/,
-          "$1"
-        );
-        axios.defaults.headers.common["Authorization"] = token;
-        const res = await axios.post(`${API_BASE}/api/user/check`, {});
-        res.data.success && getProducts();
-      } catch (error) {
-        alert(error.response.data.message);
-        navigate("/admin/login");
-      }
-    })();
+    getProducts();
   }, []);
-
-  const getProducts = async () => {
-    const res = await axios.get(`${API_BASE}/api/${API_PATH}/admin/products`);
-    setProductData(res.data.products);
+  const getProducts = async (page = 1) => {
+    try {
+      dispatch(setIsLoading(true));
+      const res = await axios.get(
+        `${API_BASE}/api/${API_PATH}/admin/products?page=${page}`
+      );
+      setProductData(res.data.products);
+      setPaginationData(res.data.pagination);
+    } catch (error) {
+      alert(error.response.data.message);
+    } finally {
+      dispatch(setIsLoading(false));
+    }
   };
 
   /////////////////////
@@ -139,24 +134,28 @@ const AdminProductList = () => {
     });
   };
   //上傳/修改產品資料
-  
+
   const handleModalBtn = () => {
     isNewProduct ? postProjectData() : putProjectData();
   };
 
   const postProjectData = async () => {
     try {
-      const res = await axios.post(`${API_BASE}/api/${API_PATH}/admin/product`, {
-        data: tempProductData,
-      });
+      const res = await axios.post(
+        `${API_BASE}/api/${API_PATH}/admin/product`,
+        {
+          data: tempProductData,
+        }
+      );
       getProducts();
       handleCloseProductModal();
-      dispatch(
-        setMessage({ message: res.data.message, status: "success" })
-      );
+      dispatch(setMessage({ message: res.data.message, status: "success" }));
     } catch (error) {
       dispatch(
-        setMessage({ message: error.response.data.message.join(","), status: "error" })
+        setMessage({
+          message: error.response.data.message.join(","),
+          status: "error",
+        })
       );
     }
   };
@@ -171,9 +170,7 @@ const AdminProductList = () => {
       );
       getProducts();
       handleCloseProductModal();
-      dispatch(
-        setMessage({ message: res.data.message, status: "success" })
-      );
+      dispatch(setMessage({ message: res.data.message, status: "success" }));
     } catch (error) {
       dispatch(
         setMessage({ message: error.response.data.message, status: "error" })
@@ -188,11 +185,11 @@ const AdminProductList = () => {
 
   const delProductData = async (id) => {
     try {
-      const res = await axios.delete(`${API_BASE}/api/${API_PATH}/admin/product/${id}`);
-      getProducts();
-      dispatch(
-        setMessage({ message: res.data.message, status: "success" })
+      const res = await axios.delete(
+        `${API_BASE}/api/${API_PATH}/admin/product/${id}`
       );
+      getProducts();
+      dispatch(setMessage({ message: res.data.message, status: "success" }));
     } catch (error) {
       dispatch(
         setMessage({ message: error.response.data.message, status: "error" })
@@ -276,6 +273,64 @@ const AdminProductList = () => {
               )}
             </tbody>
           </table>
+          <nav aria-label="Page navigation">
+            <ul className="pagination justify-content-center">
+              <li className="page-item">
+                <a
+                  className={
+                    !paginationData?.has_pre
+                      ? "disabled page-link"
+                      : "page-link"
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    getProducts(paginationData?.current_page - 1);
+                  }}
+                  href="#"
+                >
+                  上一頁
+                </a>
+              </li>
+              {Array.from({ length: paginationData?.total_pages }).map(
+                (_, index) => {
+                  return (
+                    <li className="page-item" key={index}>
+                      <a
+                        className={
+                          paginationData?.current_page === index + 1
+                            ? "page-link active"
+                            : "page-link"
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          getProducts(index + 1);
+                        }}
+                        href="#"
+                      >
+                        {index + 1}
+                      </a>
+                    </li>
+                  );
+                }
+              )}
+              <li className="page-item">
+                <a
+                  className={
+                    !paginationData?.has_next
+                      ? "disabled page-link"
+                      : "page-link"
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    getProducts(paginationData?.current_page + 1);
+                  }}
+                  href="#"
+                >
+                  下一頁
+                </a>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
       <div

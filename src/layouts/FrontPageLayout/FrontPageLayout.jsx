@@ -1,11 +1,11 @@
-import "./ProductPageLayout.css";
+import "./FrontPageLayout.css";
 
 import { Outlet } from "react-router-dom";
 
 
 import NavBar from "../../components/Navbar";
 
-function ProductPageLayout() {
+function FrontPageLayout() {
   const navItemList = [
     {
       name: "首頁",
@@ -21,15 +21,14 @@ function ProductPageLayout() {
     },
     {
       name: "登入",
-      path: "/admin/login",
+      path: "/login",
     },
   ];
   return (
     <>
       <NavBar navItemList={navItemList} />
-      
       <Outlet />
     </>
   );
 }
-export default ProductPageLayout;
+export default FrontPageLayout;

@@ -5,7 +5,8 @@ const API_BASE = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
 const LoginPage = () => {
-  const navigate= useNavigate();
+  const navigate = useNavigate();
+  const [isCheckingLoding, setIsCheckingLoding] = useState(false);
   useEffect(() => {
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)hexTokenWeek2\s*\=\s*([^;]*).*$)|^.*$/,
@@ -14,7 +15,8 @@ const LoginPage = () => {
     token !== "" &&
       (async () => {
         try {
-          await axios.post(
+          setIsCheckingLoding(true);
+          const res = await axios.post(
             `${API_BASE}/api/user/check`,
             {},
             {
@@ -26,8 +28,11 @@ const LoginPage = () => {
           navigate("/admin/productList");
         } catch (error) {
           alert(error.response.data.message);
+        } finally {
+          setIsCheckingLoding(false);
         }
       })();
+    
   }, []);
 
   const [formData, setFormData] = useState({
@@ -45,6 +50,7 @@ const LoginPage = () => {
 
       const oneMonthInSeconds = 30 * 24 * 60 * 60; // 30 天
       document.cookie = `hexTokenWeek2=${res.data.token}; max-age=${oneMonthInSeconds}`;
+      axios.defaults.headers.common["Authorization"] = res.data.token;
       navigate("/admin/productList");
     } catch (error) {
       alert(error.response.data.message);
@@ -57,7 +63,23 @@ const LoginPage = () => {
     }));
   };
   return (
-    <div className="container login py-5" style={{ width: "600px" }}>
+    <div
+      className="container login py-5"
+      style={{ width: "600px" }}
+    >
+      {isCheckingLoding && (
+        <div
+          style={{
+            position: "fixed",
+            top: "0",
+            bottom: "0",
+            left: "0",
+            right: "0",
+            backgroundColor: "white",
+            zIndex: "1500",
+          }}
+        ></div>
+      )}
       <div className="row justify-content-center">
         <h1 className="h3 mb-3 font-weight-normal">請先登入</h1>
         <div className="col-8">

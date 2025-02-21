@@ -29,7 +29,6 @@ const CartPage = () => {
       await getCart();
       setIsLoading(false);
     } catch (error) {
-      console.dir(error);
       alert(error.response.data.message);
     } finally {
       setIsLoading(false);
@@ -69,7 +68,6 @@ const CartPage = () => {
           message: message,
         },
       });
-      console.log(res);
       reset();
       await getCart();
       setIsLoading(false);

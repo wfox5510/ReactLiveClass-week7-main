@@ -17,9 +17,6 @@ const ProductListPage = () => {
   useEffect(() => {
     getProduct();
   }, []);
-  useEffect(() => {
-    //console.log(productData);
-  }, [productData]);
 
   const getProduct = async () => {
     try {

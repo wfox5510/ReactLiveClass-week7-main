@@ -151,7 +151,6 @@ const AdminProductList = () => {
       });
       getProducts();
       handleCloseProductModal();
-      console.log(res)
       dispatch(
         setMessage({ message: res.data.message, status: "success" })
       );
@@ -191,7 +190,6 @@ const AdminProductList = () => {
     try {
       const res = await axios.delete(`${API_BASE}/api/${API_PATH}/admin/product/${id}`);
       getProducts();
-      console.log(res.data.message); 
       dispatch(
         setMessage({ message: res.data.message, status: "success" })
       );

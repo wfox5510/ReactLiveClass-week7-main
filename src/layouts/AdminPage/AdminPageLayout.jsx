@@ -1,6 +1,6 @@
 import "./AdminPageLayout.css";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { Toast } from "bootstrap";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,7 +10,6 @@ import { delMessage } from "../../slice/toastSlice";
 function AdminPageLayout() {
   const message = useSelector((state) => state.toast.message);
   const dispatch = useDispatch();
-  const toastRef = useRef({});
   const navItemList = [
     {
       name: "首頁",
@@ -27,29 +26,25 @@ function AdminPageLayout() {
   ];
   useEffect(() => {
     message.forEach((messageItem) => {
-      const toastBS = new Toast(toastRef.current[messageItem.id]);
-      toastBS.show();      
       setTimeout(() => {
-        toastBS.hide();
-        dispatch(delMessage(messageItem.id));
-      }, 2000);
+        dispatch(delMessage(messageItem.id))
+      }, 3000);
     });
   }, [message]);
 
   return (
     <>
-      <div aria-live="polite" aria-atomic="true" class="position-relative">
-        <div class="toast-container position-absolute top-0 end-0 p-3">
+      <div aria-live="polite" aria-atomic="true" className="position-relative">
+        <div className="toast-container position-absolute top-0 end-0 p-3">
           {message.map((messageItem) => {
             return (
               <div
-                ref={(el) => {
-                  toastRef.current[messageItem.id] = el;
-                }}
-                className="toast hide"
+                className="toast show fade-in-out"
                 role="alert"
                 aria-live="assertive"
                 aria-atomic="true"
+                autohide="false"
+                key={messageItem.id}
               >
                 <div className={`toast-header bg-${messageItem.status}`}>
                   <strong className="me-auto text-light fw-bold">

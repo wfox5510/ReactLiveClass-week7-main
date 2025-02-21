@@ -47,7 +47,7 @@ const LoginPage = () => {
       document.cookie = `hexTokenWeek2=${res.data.token}; max-age=${oneMonthInSeconds}`;
       navigate("/admin/productList");
     } catch (error) {
-      console.log(error);
+      alert(error.response.data.message);
     }
   };
   const handleInputChange = (e) => {

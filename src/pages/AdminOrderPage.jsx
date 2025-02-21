@@ -28,7 +28,6 @@ const AdminOrderPage = () => {
   const getOrder= async()=>{
     try {
         const res = await axios.get(`${API_BASE}/api/${API_PATH}/admin/orders`);
-      console.log(res.data.orders);
       setOderData(res.data.orders);
     } catch (error) {
       alert(error.response.data.message);

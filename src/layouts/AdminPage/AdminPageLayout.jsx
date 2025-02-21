@@ -1,7 +1,7 @@
 import "./AdminPageLayout.css";
 
 import { useEffect, useLayoutEffect } from "react";
-import { Outlet ,useNavigate} from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import NavBar from "../../components/Navbar";
 import LoadingFull from "../../components/LoadingFull";
@@ -13,7 +13,7 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 
 function AdminPageLayout() {
   const message = useSelector((state) => state.toast.message);
-  const isLoading = useSelector((state) => state.loadingFull.isLoading)
+  const isLoading = useSelector((state) => state.loadingFull.isLoading);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const navItemList = [
@@ -30,7 +30,7 @@ function AdminPageLayout() {
       path: "/admin/order",
     },
   ];
-  
+
   useLayoutEffect(() => {
     (async () => {
       try {
@@ -41,7 +41,6 @@ function AdminPageLayout() {
         axios.defaults.headers.common["Authorization"] = token;
         await axios.post(`${API_BASE}/api/user/check`, {});
       } catch (error) {
-        console.log(error); 
         alert(error.response.data.message);
         navigate("/login");
       }
@@ -54,7 +53,15 @@ function AdminPageLayout() {
       }, 3000);
     });
   }, [message]);
-
+  const handleLogout = async ()=>{
+    try {
+      const res = await axios.post(`${API_BASE}/logout`);
+      document.cookie = `hexTokenWeek2=; max-age=0`;
+      navigate("/login")
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  }
   return (
     <>
       {isLoading && <LoadingFull />}
@@ -82,6 +89,16 @@ function AdminPageLayout() {
         </div>
       </div>
       <NavBar navItemList={navItemList} />
+      <div className="container text-end">
+        <button
+          className="btn btn-primary"
+          onClick={() => {
+            handleLogout();
+          }}
+        >
+          登出
+        </button>
+      </div>
       <Outlet />
     </>
   );

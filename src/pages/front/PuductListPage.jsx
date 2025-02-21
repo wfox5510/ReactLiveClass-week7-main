@@ -24,7 +24,6 @@ const ProductListPage = () => {
       const res = await axios.get(
         `${API_BASE}/api/${API_PATH}/products?page=${page}`
       );
-      console.log(res.data.pagination);
       setPaginationData(res.data.pagination);
       setProductData(res.data.products);
       dispatch(setIsLoading(false))
